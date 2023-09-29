@@ -27,4 +27,5 @@ type AccountRepository interface {
 }
 
 type TransactionRepository interface {
+	//Credit()
 }
