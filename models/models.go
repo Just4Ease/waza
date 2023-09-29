@@ -16,6 +16,8 @@ type Account struct {
 	Id                 string
 	AccountName        string
 	AccountOwnerId     string
+	Currency           string
+	Iso2               string
 	Balance            float64
 	BalanceAfterDebit  float64
 	BalanceAfterCredit float64
