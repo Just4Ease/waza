@@ -3,7 +3,6 @@ package usersrepository
 import (
 	"context"
 	"github.com/tidwall/buntdb"
-	"path"
 	"waza/models"
 	"waza/repository"
 )
@@ -33,10 +32,8 @@ func (u *userRepo) GetUserByPhone(ctx context.Context, phone string) (*models.Us
 	panic("implement me")
 }
 
-func NewUserRepository(dataStorageDir string) (repository.UserRepository, error) {
-	database := path.Join(dataStorageDir, usersFile)
-
-	db, err := buntdb.Open(database)
+func NewUserRepository(dataStorageFile string) (repository.UserRepository, error) {
+	db, err := buntdb.Open(dataStorageFile)
 	if err != nil {
 		return nil, err
 	}

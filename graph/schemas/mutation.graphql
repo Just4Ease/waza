@@ -1,0 +1,12 @@
+type Mutation {
+    createUser(payload: CreateUserInput!): Result
+    transferFunds(payload: TransferFundsInput): Result
+}
+
+type Result {
+    success: Boolean!
+    message: String
+    data: Any
+}
+
+scalar Any

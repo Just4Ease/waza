@@ -3,7 +3,6 @@ package accountsrepository
 import (
 	"context"
 	"github.com/tidwall/buntdb"
-	"path"
 	"waza/models"
 	"waza/repository"
 )
@@ -27,10 +26,8 @@ func (a accountsRepo) ListAccountsByOwnerId(ctx context.Context, ownerId string)
 	panic("implement me")
 }
 
-func NewAccountRepository(dataStorageDir string) (repository.AccountRepository, error) {
-	database := path.Join(dataStorageDir, "accounts.db")
-
-	db, err := buntdb.Open(database)
+func NewAccountRepository(dataStorageFile string) (repository.AccountRepository, error) {
+	db, err := buntdb.Open(dataStorageFile)
 	if err != nil {
 		return nil, err
 	}

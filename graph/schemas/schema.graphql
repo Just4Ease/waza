@@ -1,0 +1,43 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+
+
+
+type User {
+    id: String!
+    firstName: String!
+    lastName: String!
+    email: String!
+    phone: String!
+    timeCreated: Time!
+    timeUpdated: Time!
+}
+
+input CreateUserInput {
+    firstName: String!
+    lastName: String!
+    phone: String!
+    email: String
+}
+
+type Account {
+    id: String!
+    accountName: String!
+    balance: Float!
+    user: User
+}
+
+type Transaction {
+    id: String!
+    reference: String!
+}
+
+input TransferFundsInput {
+    fromAccountId: String!
+    toAccountId: String!
+    amount: Float
+}
+
+scalar Time

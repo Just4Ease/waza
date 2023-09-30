@@ -1,41 +1,28 @@
 package main
 
 import (
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/sirupsen/logrus"
+	"log"
+	"net/http"
 	"waza/config"
-	"waza/repository"
-	"waza/repository/accounts"
-	"waza/repository/transactions"
-	"waza/repository/users"
-	"waza/services/accounts"
-	"waza/services/transactions"
-	"waza/services/users"
+	"waza/graph"
+	"waza/setup"
 )
 
 func main() {
 	secrets := config.GetSecrets()
 	logger := logrus.New()
 
-	var userRepository repository.UserRepository
-	var accountRepository repository.AccountRepository
-	var transactionsRepository repository.TransactionRepository
-	var err error
+	opts := setup.ConfigureServiceDependencies(logger)
 
-	if userRepository, err = usersrepository.NewUserRepository(secrets.DataStorageDir); err != nil {
-		logrus.Fatal("failed to start service, user repository error: ", err)
-	}
+	// GraphQL API ( using this because of the playground, so that you won't stress loading up postman. )
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: graph.NewResolver(opts)}))
 
-	if accountRepository, err = accountsrepository.NewAccountRepository(secrets.DataStorageDir); err != nil {
-		logrus.Fatal("failed to start service, accounts repository error: ", err)
-	}
+	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	http.Handle("/graphql", srv)
 
-	if transactionsRepository, err = transactionsrepository.NewTransactionsRepository(secrets.DataStorageDir); err != nil {
-		logrus.Fatal("failed to start service, transactions repository error: ", err)
-	}
-
-	userService := users.NewUserService(userRepository, logger)
-	accountService := accounts.NewAccountService(accountRepository, logger)
-	transactionService := transactions.NewTransactionService(accountRepository, transactionsRepository, logger)
-
-	// TODO: GraphQL API ( using this because of the playground )
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", secrets.Port)
+	log.Fatal(http.ListenAndServe(":"+secrets.Port, nil))
 }
