@@ -5,7 +5,7 @@ type Mutation {
 
 type Result {
     success: Boolean!
-    message: String
+    message: String!
     data: Any
 }
 

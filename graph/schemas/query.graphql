@@ -3,7 +3,9 @@ type Query {
     getUserByEmail(email: String!): User
     getUserByPhone(phone: String!): User
 
-    listAccounts: [Account!]!
+
     getAccountById(id: String!): Account
+    getAccountByOwnerIdId(ownerId: String!): Account
+
     getTransactionHistory(accountId: String!): [Transaction!]!
 }

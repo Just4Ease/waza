@@ -1,19 +1,15 @@
 package transactionsrepository
 
 import (
-	"github.com/tidwall/buntdb"
+	"database/sql"
 	"waza/repository"
 )
 
 type transactionsRepo struct {
-	dataStore *buntdb.DB
+	dataStore *sql.DB
 }
 
-func NewTransactionsRepository(dataStorageFile string) (repository.TransactionRepository, error) {
-	db, err := buntdb.Open(dataStorageFile)
-	if err != nil {
-		return nil, err
-	}
+func NewTransactionsRepository(db *sql.DB) (repository.TransactionRepository, error) {
 
 	return &transactionsRepo{
 		dataStore: db,

@@ -7,31 +7,60 @@ package graph
 import (
 	"context"
 	"fmt"
+	"waza/utils"
 )
 
 // GetUserByID is the resolver for the getUserById field.
 func (r *queryResolver) GetUserByID(ctx context.Context, id string) (*User, error) {
-	panic(fmt.Errorf("not implemented: GetUserByID - getUserById"))
+	out, err := r.UserService.GetUserById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var user User
+	_ = utils.UnPack(out, &user)
+	return &user, nil
 }
 
 // GetUserByEmail is the resolver for the getUserByEmail field.
 func (r *queryResolver) GetUserByEmail(ctx context.Context, email string) (*User, error) {
-	panic(fmt.Errorf("not implemented: GetUserByEmail - getUserByEmail"))
+	out, err := r.UserService.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	var user User
+	_ = utils.UnPack(out, &user)
+	return &user, nil
 }
 
 // GetUserByPhone is the resolver for the getUserByPhone field.
 func (r *queryResolver) GetUserByPhone(ctx context.Context, phone string) (*User, error) {
-	panic(fmt.Errorf("not implemented: GetUserByPhone - getUserByPhone"))
-}
+	out, err := r.UserService.GetUserByPhone(ctx, phone)
+	if err != nil {
+		return nil, err
+	}
 
-// ListAccounts is the resolver for the listAccounts field.
-func (r *queryResolver) ListAccounts(ctx context.Context) ([]*Account, error) {
-	panic(fmt.Errorf("not implemented: ListAccounts - listAccounts"))
+	var user User
+	_ = utils.UnPack(out, &user)
+	return &user, nil
 }
 
 // GetAccountByID is the resolver for the getAccountById field.
 func (r *queryResolver) GetAccountByID(ctx context.Context, id string) (*Account, error) {
-	panic(fmt.Errorf("not implemented: GetAccountByID - getAccountById"))
+	out, err := r.AccountService.GetAccountById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var account Account
+	_ = utils.UnPack(out, &account)
+	return &account, nil
+}
+
+// GetAccountByOwnerIDID is the resolver for the getAccountByOwnerIdId field.
+func (r *queryResolver) GetAccountByOwnerIDID(ctx context.Context, ownerID string) (*Account, error) {
+	panic(fmt.Errorf("not implemented: GetAccountByOwnerIDID - getAccountByOwnerIdId"))
 }
 
 // GetTransactionHistory is the resolver for the getTransactionHistory field.
@@ -43,3 +72,13 @@ func (r *queryResolver) GetTransactionHistory(ctx context.Context, accountID str
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) ListAccounts(ctx context.Context) ([]*Account, error) {
+	panic(fmt.Errorf("not implemented: ListAccounts - listAccounts"))
+}

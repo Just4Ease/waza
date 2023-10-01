@@ -7,11 +7,31 @@ package graph
 import (
 	"context"
 	"fmt"
+	"waza/models"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, payload CreateUserInput) (*Result, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	user, err := r.UserService.CreateUser(ctx, models.User{
+		FirstName: payload.FirstName,
+		LastName:  payload.LastName,
+		Email:     payload.Email,
+		Phone:     payload.Phone,
+	})
+
+	if err != nil {
+		return &Result{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &Result{
+		Success: true,
+		Message: "Successfully created user",
+		Data:    user,
+	}, nil
 }
 
 // TransferFunds is the resolver for the transferFunds field.

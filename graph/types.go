@@ -22,7 +22,7 @@ type CreateUserInput struct {
 
 type Result struct {
 	Success bool        `json:"success"`
-	Message *string     `json:"message,omitempty"`
+	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
