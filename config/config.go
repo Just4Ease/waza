@@ -11,9 +11,8 @@ import (
 )
 
 type Secrets struct {
-	Port           string      `json:"PORT"`
-	DataStorageDir string      `json:"DATA_STORAGE_DIR"`
-	Environment    Environment `json:"ENVIRONMENT"`
+	Port        string      `json:"PORT"`
+	Environment Environment `json:"ENVIRONMENT"`
 }
 
 var ss Secrets
@@ -30,9 +29,6 @@ func init() {
 	}
 
 	ss = Secrets{}
-	if ss.DataStorageDir = os.Getenv("DATA_STORAGE_DIR"); ss.DataStorageDir == empty {
-		log.Fatal("Data Storage Dir is required to start this service. Also ensure it is a writable directory")
-	}
 
 	if ss.Environment = Environment(os.Getenv("ENVIRONMENT")); ss.Environment.IsValid() != nil {
 		log.Fatal("Error in environment variables: ", err)
