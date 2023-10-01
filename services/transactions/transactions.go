@@ -98,9 +98,11 @@ func (t TransactionService) TransferFunds(ctx context.Context, payload models.Tr
 		t.logger.WithContext(ctx).Infof("rolling back debit on source account: %s", payload.FromAccountId)
 
 		// Ok comrade... We couldn't credit the destination account. But we debited the source account.
-		// Now, we have to return the money to the source. ( hence the reason for debit first, because we can control a reversal from here. )
-		// Publish transaction failed event here...
-		return nil, err
+		// Now, we have to return the money to the source.
+		// Hence, the reason for debit first, because we can control a reversal from here.
+		_, _ = t.processDebitReversal(ctx, debitTransaction)
+		// Mark the debitedTransaction as failed.
+
 	}
 
 	// We are creating a completed credit transaction, because that's the only reasonable status to have.
@@ -131,18 +133,43 @@ func (t TransactionService) TransferFunds(ctx context.Context, payload models.Tr
 	return debitTransaction, nil
 }
 
-func (t TransactionService) ProcessDebitReversal(ctx context.Context, failedDebitTransaction *models.Transaction) (*models.Transaction, error) {
-	return nil, nil
-}
+// processDebitReversal is an internal function that can be trusted to reverse a debit on an account.
+// Once a debit has been reversed, a new transaction of status `reversed` is created, and the previous transaction of status `pending` is marked as `failed`
+func (t TransactionService) processDebitReversal(ctx context.Context, debitTransaction *models.Transaction) (*models.Transaction, error) {
+	account, err := t.accountRepository.Credit(ctx, debitTransaction.SourceAccountId, debitTransaction.Amount)
+	if err != nil {
+		t.logger.WithContext(ctx).WithError(err).Error("failed to reverse funds back to the debited account.")
+		// TODO: Push this to an event queue for later processing or report to Waza finance admin via slack, email, and intercom.
+		return nil, err
+	}
 
-type CreditAdvice struct {
-	Account     *models.Account
-	Description string
-	Reference   string
-}
+	// We are creating a completed credit transaction, because that's the only reasonable status to have.
+	now := time.Now()
+	reversedTransaction, err := t.transactionRepository.CreateTransaction(ctx, &models.Transaction{
+		TimeCreated:            now,
+		TimeUpdated:            now,
+		Reference:              debitTransaction.Reference,
+		Description:            fmt.Sprintf("REVERSAL %s", debitTransaction.Description),
+		Amount:                 debitTransaction.Amount,
+		Type:                   models.Credit,
+		Status:                 models.Reversed,
+		SourceAccountId:        "GENERAL_LEDGER",
+		SourceAccountName:      "WAZA GENERAL LEDGER",
+		DestinationAccountId:   debitTransaction.SourceAccountId,
+		DestinationAccountName: debitTransaction.SourceAccountName,
+		BalanceBeforeCredit:    account.BalanceBeforeCredit, // We can maintain the snapshot balance from the pending transaction or actual account balance snapshot, in case new money entered.
+		BalanceAfterCredit:     account.BalanceAfterCredit,  // // We can maintain the snapshot balance from the pending transaction or actual account balance snapshot, in case new money entered.
+		BalanceBeforeDebit:     0,
+		BalanceAfterDebit:      0,
+	})
+	if err != nil {
+		t.logger.WithContext(ctx).WithError(err).Error("failed to create reversed transaction record after reversing funds back to the debited account.")
+		// TODO: Push this to an event queue for later processing or report to Waza finance admin via slack, email, and intercom.
+		return nil, err
+	}
 
-func (t TransactionService) CreditAccount(ctx context.Context, account *models.Account, description string) {
-
+	t.publishReversedTransaction(ctx, reversedTransaction)
+	return reversedTransaction, nil
 }
 
 func generateTransactionReference(now time.Time) string {

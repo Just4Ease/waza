@@ -99,13 +99,13 @@ type TransactionStatus string
 const (
 	Pending   TransactionStatus = "pending"
 	Completed TransactionStatus = "completed"
-	Canceled  TransactionStatus = "canceled"
+	Failed    TransactionStatus = "failed"
 	Reversed  TransactionStatus = "reversed"
 )
 
 func (t TransactionStatus) IsValid() bool {
 	switch t {
-	case Pending, Completed, Canceled, Reversed:
+	case Pending, Completed, Failed, Reversed:
 		return true
 	default:
 		return false
