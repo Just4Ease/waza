@@ -28,5 +28,5 @@ func main() {
 	http.Handle(endpoint, srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", secrets.Port)
-	log.Fatal(http.ListenAndServe(":"+secrets.Port, nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:"+secrets.Port, nil))
 }

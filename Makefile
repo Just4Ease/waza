@@ -10,3 +10,8 @@ alignment:
 
 dev:
 	nodemon --exec "go run" main.go --signal SIGTERM -e .js,.css,.go,.html,.env
+
+build:
+	docker build -t waza-justice-test .
+docker: build
+	docker run -e ENVIRONMENT=staging -e PORT=4000 waza-justice-test
