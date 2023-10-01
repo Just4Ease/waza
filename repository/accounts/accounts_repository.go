@@ -3,6 +3,9 @@ package accountsrepository
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"log"
+	"math"
 	"time"
 	"waza/models"
 	"waza/repository"
@@ -17,6 +20,10 @@ CREATE TABLE IF NOT EXISTS accounts (
 		currency TEXT,
 		iso2 TEXT,
 		balance FLOAT,
+		balanceBeforeCredit FLOAT,
+		balanceAfterCredit FLOAT,
+		balanceBeforeDebit FLOAT,
+		balanceAfterDebit FLOAT,
 		timeCreated DATETIME,
 		timeUpdated DATETIME
 )
@@ -71,6 +78,105 @@ func (a accountsRepo) GetAccountById(ctx context.Context, id string) (*models.Ac
 func (a accountsRepo) GetAccountByOwnerId(ctx context.Context, ownerId string) (*models.Account, error) {
 	row := a.dataStore.QueryRowContext(ctx, "SELECT * from accounts WHERE accountOwnerId = ?", ownerId)
 	return scanner(row)
+}
+
+func (a accountsRepo) Credit(ctx context.Context, accountId string, amount float64) (*models.Account, error) {
+	if amount <= 0 || amount >= math.MaxFloat64 {
+		return nil, errors.New("amount has to be within a valid range")
+	}
+
+	tx, err := a.dataStore.BeginTx(ctx, &sql.TxOptions{
+		Isolation: sql.LevelLinearizable,
+		ReadOnly:  false,
+	})
+	if err != nil {
+		log.Println("Error beginning transaction in Credit Account method.", err)
+		return nil, err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			// Rollback the transaction in case of a panic.
+			if err := tx.Rollback(); err != nil {
+				log.Println("Error returned from transaction rollback in Credit Account method.", err)
+			}
+		}
+	}()
+
+	row := tx.QueryRowContext(ctx, "SELECT * from accounts WHERE id = ?", accountId)
+	account, err := scanner(row)
+	if err != nil {
+		return nil, err
+	}
+
+	newBalance := account.Balance + amount
+	account.BalanceBeforeCredit = account.Balance
+	account.BalanceAfterCredit = newBalance
+	account.Balance = newBalance
+	account.TimeUpdated = time.Now()
+
+	if err = tx.Commit(); err != nil {
+		log.Println("Error committing credit transaction:", err)
+		if err := tx.Rollback(); err != nil {
+			log.Println("Error returned from transaction rollback in Credit Account method when transaction failed to commit.", err)
+			return nil, err
+		}
+		return nil, err
+	}
+
+	// This account here will be used to record or update a transaction log.
+	return account, nil
+}
+
+func (a accountsRepo) Debit(ctx context.Context, accountId string, amount float64) (*models.Account, error) {
+	if amount <= 0 || amount >= math.MaxFloat64 {
+		return nil, errors.New("amount has to be within a valid range")
+	}
+
+	tx, err := a.dataStore.BeginTx(ctx, &sql.TxOptions{
+		Isolation: sql.LevelLinearizable,
+		ReadOnly:  false,
+	})
+	if err != nil {
+		log.Println("Error beginning transaction in Debit Account method.", err)
+		return nil, err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			// Rollback the transaction in case of a panic.
+			if err := tx.Rollback(); err != nil {
+				log.Println("Error returned from transaction rollback in Debit Account method.", err)
+			}
+		}
+	}()
+
+	row := tx.QueryRowContext(ctx, "SELECT * from accounts WHERE id = ?", accountId)
+	account, err := scanner(row)
+	if err != nil {
+		return nil, err
+	}
+
+	if amount > account.Balance {
+		return nil, errors.New("insufficient balance")
+	}
+
+	account.BalanceBeforeDebit = account.Balance
+	account.Balance -= amount
+	account.BalanceAfterDebit = account.Balance
+	account.TimeUpdated = time.Now()
+
+	if err = tx.Commit(); err != nil {
+		log.Println("Error committing debit account transaction:", err)
+		if err := tx.Rollback(); err != nil {
+			log.Println("Error returned from transaction rollback in Debit Account method when transaction failed to commit.", err)
+			return nil, err
+		}
+		return nil, err
+	}
+
+	// This account here will be used to record or update a transaction log.
+	return account, nil
 }
 
 func NewAccountRepository(db *sql.DB) (repository.AccountRepository, error) {

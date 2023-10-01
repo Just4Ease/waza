@@ -22,27 +22,27 @@ type ServiceDependencies struct {
 }
 
 func ConfigureServiceDependencies(logger *logrus.Logger) *ServiceDependencies {
+	var db *sql.DB
 	var eventStore store.EventStore
 	var userRepository repository.UserRepository
 	var accountRepository repository.AccountRepository
 	var transactionsRepository repository.TransactionRepository
 	var err error
 
-	db, err := sql.Open("sqlite3", "data.db")
-	if err != nil {
-		logrus.Fatal("failed to open database: ", err)
+	if db, err = sql.Open("sqlite3", "data.db"); err != nil {
+		logger.WithError(err).Fatal("failed to open database")
 	}
 
 	if userRepository, err = usersrepository.NewUserRepository(db); err != nil {
-		logrus.Fatal("failed to start service, user repository error: ", err)
+		logger.WithError(err).Fatal("failed to start service, user repository error")
 	}
 
 	if accountRepository, err = accountsrepository.NewAccountRepository(db); err != nil {
-		logrus.Fatal("failed to start service, accounts repository error: ", err)
+		logger.WithError(err).Fatal("failed to start service, accounts repository error")
 	}
 
 	if transactionsRepository, err = transactionsrepository.NewTransactionsRepository(db); err != nil {
-		logrus.Fatal("failed to start service, transactions repository error: ", err)
+		logger.WithError(err).Fatal("failed to start service, transactions repository error")
 	}
 
 	eventStore = store.NewEventStore(logger)

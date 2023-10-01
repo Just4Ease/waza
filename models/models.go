@@ -59,6 +59,21 @@ type Transaction struct {
 	Amount                 float64           `json:"amount"`
 }
 
+type TransactionPayload struct {
+	FromAccountId string  `json:"fromAccountId"`
+	ToAccountId   string  `json:"toAccountId"`
+	Description   string  `json:"description"`
+	Amount        float64 `json:"amount"`
+}
+
+func (t TransactionPayload) Validate() error {
+	return validation.ValidateStruct(&t,
+		validation.Field(&t.FromAccountId, validation.Required),
+		validation.Field(&t.ToAccountId, validation.Required),
+		validation.Field(&t.Amount, validation.Required, validation.Min(100)),
+	)
+}
+
 type TransactionType string
 
 const (

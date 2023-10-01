@@ -19,8 +19,13 @@ type AccountRepository interface {
 	CreateAccount(ctx context.Context, payload *models.Account) (*models.Account, error)
 	GetAccountById(ctx context.Context, id string) (*models.Account, error)
 	GetAccountByOwnerId(ctx context.Context, ownerId string) (*models.Account, error)
+	Credit(ctx context.Context, accountId string, amount float64) (*models.Account, error)
+	Debit(ctx context.Context, accountId string, amount float64) (*models.Account, error)
 }
 
 type TransactionRepository interface {
-	//Credit()
+	CreateTransaction(ctx context.Context, payload *models.Transaction) (*models.Transaction, error)
+	GetTransactionById(ctx context.Context, id string) (*models.Transaction, error)
+	UpdateTransaction(ctx context.Context, payload *models.Transaction) (*models.Transaction, error)
+	ListTransactionHistoryByAccountId(ctx context.Context, accountId string) ([]*models.Transaction, error)
 }
