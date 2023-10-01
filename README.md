@@ -4,6 +4,8 @@
 ### About Service
 The program is written in go.
 
+Please see the ./docs folder for extra information.
+
 | Service Name | API Type | Description                                                                                                                                                               |
 |--------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | waza         | GraphQL  | This api uses GraphQL as it's input & output contract layer, <br/> It also gives you a nice playground to test the api on https://localhost:[port] - default port is 4000 | 
