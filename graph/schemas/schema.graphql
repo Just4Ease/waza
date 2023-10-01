@@ -37,7 +37,8 @@ type Transaction {
 input TransferFundsInput {
     fromAccountId: String!
     toAccountId: String!
-    amount: Float
+    amount: Float!
+    description: String!
 }
 
 scalar Time

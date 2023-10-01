@@ -32,9 +32,10 @@ type Transaction struct {
 }
 
 type TransferFundsInput struct {
-	FromAccountID string   `json:"fromAccountId"`
-	ToAccountID   string   `json:"toAccountId"`
-	Amount        *float64 `json:"amount,omitempty"`
+	FromAccountID string  `json:"fromAccountId"`
+	ToAccountID   string  `json:"toAccountId"`
+	Amount        float64 `json:"amount"`
+	Description   string  `json:"description"`
 }
 
 type User struct {

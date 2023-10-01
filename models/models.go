@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
+	TimeCreated time.Time `json:"timeCreated"`
+	TimeUpdated time.Time `json:"timeUpdated"`
+	Email       *string   `json:"email"`
 	Id          string    `json:"id"`
 	FirstName   string    `json:"firstName"`
 	LastName    string    `json:"lastName"`
-	Email       *string   `json:"email"`
 	Phone       string    `json:"phone"`
-	TimeCreated time.Time `json:"timeCreated"`
-	TimeUpdated time.Time `json:"timeUpdated"` // Hmm... not really useful throughout this test 💀
 }
 
 func (u User) Validate() error {
@@ -26,37 +26,37 @@ func (u User) Validate() error {
 }
 
 type Account struct {
+	TimeCreated         time.Time `json:"timeCreated"`
+	TimeUpdated         time.Time `json:"timeUpdated"`
 	Id                  string    `json:"id"`
 	AccountName         string    `json:"accountName"`
 	AccountOwnerId      string    `json:"accountOwnerId"`
 	Currency            string    `json:"currency"`
 	Iso2                string    `json:"iso2"`
 	Balance             float64   `json:"balance"`
-	BalanceBeforeCredit float64   `json:"balanceBeforeCredit"` // polled from transaction.
-	BalanceBeforeDebit  float64   `json:"balanceBeforeDebit"`  // polled from transaction.
-	BalanceAfterDebit   float64   `json:"balanceAfterDebit"`   // polled from transaction.
-	BalanceAfterCredit  float64   `json:"balanceAfterCredit"`  // polled from transaction.
-	TimeCreated         time.Time `json:"timeCreated"`
-	TimeUpdated         time.Time `json:"timeUpdated"`
+	BalanceBeforeCredit float64   `json:"balanceBeforeCredit"`
+	BalanceBeforeDebit  float64   `json:"balanceBeforeDebit"`
+	BalanceAfterDebit   float64   `json:"balanceAfterDebit"`
+	BalanceAfterCredit  float64   `json:"balanceAfterCredit"`
 }
 
 type Transaction struct {
-	Id                     string            `json:"id"`
-	Reference              string            `json:"reference"`
-	Description            string            `json:"description"`
-	Amount                 float64           `json:"amount"`
+	TimeCreated            time.Time         `json:"timeCreated"`
+	TimeUpdated            time.Time         `json:"timeUpdated"`
+	DestinationAccountId   string            `json:"destinationAccountId"`
+	DestinationAccountName string            `json:"destinationAccountName"`
 	Type                   TransactionType   `json:"type"`
 	Status                 TransactionStatus `json:"status"`
 	SourceAccountId        string            `json:"sourceAccountId"`
 	SourceAccountName      string            `json:"sourceAccountName"`
-	DestinationAccountId   string            `json:"destinationAccountId"`
-	DestinationAccountName string            `json:"destinationAccountName"`
-	BalanceBeforeCredit    float64           `json:"balanceBeforeCredit"`
+	Id                     string            `json:"id"`
+	Reference              string            `json:"reference"`
+	Description            string            `json:"description"`
 	BalanceBeforeDebit     float64           `json:"balanceBeforeDebit"`
 	BalanceAfterDebit      float64           `json:"balanceAfterDebit"`
 	BalanceAfterCredit     float64           `json:"balanceAfterCredit"`
-	TimeCreated            time.Time         `json:"timeCreated"`
-	TimeUpdated            time.Time         `json:"timeUpdated"`
+	BalanceBeforeCredit    float64           `json:"balanceBeforeCredit"`
+	Amount                 float64           `json:"amount"`
 }
 
 type TransactionType string
