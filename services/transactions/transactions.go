@@ -137,9 +137,20 @@ func (t TransactionService) TransferFunds(ctx context.Context, payload models.Tr
 	// Then, use this to go and update the debit transaction in the background.
 	t.publishCompletedTransaction(ctx, creditTransaction)
 
+	// Deliberately Wrote this update here...
+	// Pheww! submitting test )
+	debitTransaction.Status = models.Completed
+	completedDebitTransaction, err := t.transactionRepository.UpdateTransaction(ctx, debitTransaction.Id, debitTransaction.Status)
+	if err != nil {
+		t.logger.WithContext(ctx).WithError(err).Error("failed to mark debited transaction as failed")
+		// TODO: Report to Waza's slack, email, intercom or any channel...
+		return debitTransaction, nil
+	}
+	t.publishCompletedTransaction(ctx, completedDebitTransaction)
+
 	// We are returning the debit transaction.
 	// because this is the source more like when a person initiates a transfer, they want to see their receipt.
-	return debitTransaction, nil
+	return completedDebitTransaction, nil
 }
 
 // processDebitReversal is an internal function that can be trusted to reverse a debit on an account.

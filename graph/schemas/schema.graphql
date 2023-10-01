@@ -32,6 +32,18 @@ type Account {
 type Transaction {
     id: String!
     reference: String!
+    description: String!
+    sourceAccountId: String!
+    sourceAccountName: String!
+    destinationAccountId: String!
+    destinationAccountName: String!
+    amount: Float!
+    balanceBeforeCredit: Float!
+    balanceAfterCredit: Float!
+    balanceBeforeDebit: Float!
+    balanceAfterDebit: Float!
+    timeCreated: Time!
+    timeUpdated: Time!
 }
 
 input TransferFundsInput {

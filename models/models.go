@@ -70,7 +70,7 @@ func (t TransactionPayload) Validate() error {
 	return validation.ValidateStruct(&t,
 		validation.Field(&t.FromAccountId, validation.Required),
 		validation.Field(&t.ToAccountId, validation.Required),
-		validation.Field(&t.Amount, validation.Required, validation.Min(100)),
+		validation.Field(&t.Amount, validation.Required),
 	)
 }
 

@@ -41,6 +41,8 @@ func (t transactionsRepo) CreateTransaction(ctx context.Context, transaction *mo
 	transaction.TimeCreated = now
 	transaction.TimeUpdated = now
 
+	//t.getTransactionDuplicateByReference(ctx, transaction.Reference, )
+
 	insertSQL := `
         INSERT INTO transactions (id, amount, description, reference, sourceAccountId,
             sourceAccountName, destinationAccountId, destinationAccountName, status,
@@ -167,3 +169,8 @@ func scanRows(rows *sql.Rows) (*models.Transaction, error) {
 
 	return &transaction, nil
 }
+
+//func (t transactionsRepo) getTransactionDuplicateByReference(ctx context.Context, ref string) (*models.Transaction, error) {
+//	row := t.dataStore.QueryRowContext(ctx, "SELECT * from transactions WHERE reference = ?", ref)
+//	return scanner(row)
+//}

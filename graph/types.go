@@ -27,8 +27,20 @@ type Result struct {
 }
 
 type Transaction struct {
-	ID        string `json:"id"`
-	Reference string `json:"reference"`
+	ID                     string    `json:"id"`
+	Reference              string    `json:"reference"`
+	Description            string    `json:"description"`
+	SourceAccountID        string    `json:"sourceAccountId"`
+	SourceAccountName      string    `json:"sourceAccountName"`
+	DestinationAccountID   string    `json:"destinationAccountId"`
+	DestinationAccountName string    `json:"destinationAccountName"`
+	Amount                 float64   `json:"amount"`
+	BalanceBeforeCredit    float64   `json:"balanceBeforeCredit"`
+	BalanceAfterCredit     float64   `json:"balanceAfterCredit"`
+	BalanceBeforeDebit     float64   `json:"balanceBeforeDebit"`
+	BalanceAfterDebit      float64   `json:"balanceAfterDebit"`
+	TimeCreated            time.Time `json:"timeCreated"`
+	TimeUpdated            time.Time `json:"timeUpdated"`
 }
 
 type TransferFundsInput struct {

@@ -44,26 +44,21 @@ func (a accountsRepo) CreateAccount(ctx context.Context, payload *models.Account
 	payload.TimeUpdated = now
 
 	_txt := `
-INSERT INTO 
-    accounts (id, accountName, accountOwnerId, currency, iso2, balance, balanceBeforeCredit, balanceAfterCredit, balanceBeforeDebit, balanceAfterDebit,  timeCreated, timeUpdated)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`
+        INSERT INTO accounts (id, accountName, accountOwnerId, currency, iso2, balance,
+            balanceBeforeCredit, balanceAfterCredit, balanceBeforeDebit, balanceAfterDebit,
+            timeCreated, timeUpdated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	statement, err := a.dataStore.PrepareContext(ctx, _txt)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = statement.ExecContext(ctx,
-		payload.Id,
-		payload.AccountName,
-		payload.AccountOwnerId,
-		payload.Currency,
-		payload.Iso2,
-		payload.Balance,
-		payload.TimeCreated,
-		payload.TimeUpdated,
-	)
+	_, err = statement.ExecContext(ctx, payload.Id, payload.AccountName, payload.AccountOwnerId,
+		payload.Currency, payload.Iso2, payload.Balance, payload.BalanceBeforeCredit,
+		payload.BalanceAfterCredit, payload.BalanceBeforeDebit, payload.BalanceAfterDebit,
+		payload.TimeCreated, payload.TimeUpdated)
+
 	if err != nil {
 		return nil, err
 	}
