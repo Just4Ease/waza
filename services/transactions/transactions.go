@@ -103,6 +103,15 @@ func (t TransactionService) TransferFunds(ctx context.Context, payload models.Tr
 		_, _ = t.processDebitReversal(ctx, debitTransaction)
 		// Mark the debitedTransaction as failed.
 
+		debitTransaction.Status = models.Failed
+		_, err := t.transactionRepository.UpdateTransaction(ctx, debitTransaction.Id, debitTransaction.Status)
+		if err != nil {
+			t.logger.WithContext(ctx).WithError(err).Error("failed to mark debited transaction as failed")
+			// TODO: Report to Waza's slack, email, intercom or any channel...
+			return debitTransaction, nil
+		}
+
+		return debitTransaction, nil
 	}
 
 	// We are creating a completed credit transaction, because that's the only reasonable status to have.
@@ -170,6 +179,10 @@ func (t TransactionService) processDebitReversal(ctx context.Context, debitTrans
 
 	t.publishReversedTransaction(ctx, reversedTransaction)
 	return reversedTransaction, nil
+}
+
+func (t TransactionService) ListTransactionHistory(ctx context.Context, accountId string) ([]*models.Transaction, error) {
+	return t.transactionRepository.ListTransactionHistoryByAccountId(ctx, accountId)
 }
 
 func generateTransactionReference(now time.Time) string {

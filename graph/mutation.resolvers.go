@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"waza/models"
 )
 
@@ -36,7 +35,25 @@ func (r *mutationResolver) CreateUser(ctx context.Context, payload CreateUserInp
 
 // TransferFunds is the resolver for the transferFunds field.
 func (r *mutationResolver) TransferFunds(ctx context.Context, payload *TransferFundsInput) (*Result, error) {
-	panic(fmt.Errorf("not implemented: TransferFunds - transferFunds"))
+	transaction, err := r.TransactionService.TransferFunds(ctx, models.TransactionPayload{
+		FromAccountId: payload.FromAccountID,
+		ToAccountId:   payload.ToAccountID,
+		Description:   payload.Description,
+		Amount:        payload.Amount,
+	})
+	if err != nil {
+		return &Result{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &Result{
+		Success: false,
+		Message: "Funds transfer successful",
+		Data:    transaction,
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.

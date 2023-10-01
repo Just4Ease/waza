@@ -5,7 +5,7 @@ type Query {
 
 
     getAccountById(id: String!): Account
-    getAccountByOwnerIdId(ownerId: String!): Account
+    getAccountByOwnerId(ownerId: String!): Account
 
     getTransactionHistory(accountId: String!): [Transaction!]!
 }

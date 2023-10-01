@@ -59,7 +59,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		GetAccountByID        func(childComplexity int, id string) int
-		GetAccountByOwnerIDID func(childComplexity int, ownerID string) int
+		GetAccountByOwnerID   func(childComplexity int, ownerID string) int
 		GetTransactionHistory func(childComplexity int, accountID string) int
 		GetUserByEmail        func(childComplexity int, email string) int
 		GetUserByID           func(childComplexity int, id string) int
@@ -97,7 +97,7 @@ type QueryResolver interface {
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserByPhone(ctx context.Context, phone string) (*User, error)
 	GetAccountByID(ctx context.Context, id string) (*Account, error)
-	GetAccountByOwnerIDID(ctx context.Context, ownerID string) (*Account, error)
+	GetAccountByOwnerID(ctx context.Context, ownerID string) (*Account, error)
 	GetTransactionHistory(ctx context.Context, accountID string) ([]*Transaction, error)
 }
 
@@ -180,17 +180,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetAccountByID(childComplexity, args["id"].(string)), true
 
-	case "Query.getAccountByOwnerIdId":
-		if e.complexity.Query.GetAccountByOwnerIDID == nil {
+	case "Query.getAccountByOwnerId":
+		if e.complexity.Query.GetAccountByOwnerID == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getAccountByOwnerIdId_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_getAccountByOwnerId_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetAccountByOwnerIDID(childComplexity, args["ownerId"].(string)), true
+		return e.complexity.Query.GetAccountByOwnerID(childComplexity, args["ownerId"].(string)), true
 
 	case "Query.getTransactionHistory":
 		if e.complexity.Query.GetTransactionHistory == nil {
@@ -512,7 +512,7 @@ func (ec *executionContext) field_Query_getAccountById_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getAccountByOwnerIdId_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getAccountByOwnerId_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1200,8 +1200,8 @@ func (ec *executionContext) fieldContext_Query_getAccountById(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_getAccountByOwnerIdId(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_getAccountByOwnerIdId(ctx, field)
+func (ec *executionContext) _Query_getAccountByOwnerId(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getAccountByOwnerId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1214,7 +1214,7 @@ func (ec *executionContext) _Query_getAccountByOwnerIdId(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetAccountByOwnerIDID(rctx, fc.Args["ownerId"].(string))
+		return ec.resolvers.Query().GetAccountByOwnerID(rctx, fc.Args["ownerId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1228,7 +1228,7 @@ func (ec *executionContext) _Query_getAccountByOwnerIdId(ctx context.Context, fi
 	return ec.marshalOAccount2ᚖwazaᚋgraphᚐAccount(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_getAccountByOwnerIdId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getAccountByOwnerId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1255,7 +1255,7 @@ func (ec *executionContext) fieldContext_Query_getAccountByOwnerIdId(ctx context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getAccountByOwnerIdId_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_getAccountByOwnerId_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4066,7 +4066,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "getAccountByOwnerIdId":
+		case "getAccountByOwnerId":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -4075,7 +4075,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getAccountByOwnerIdId(ctx, field)
+				res = ec._Query_getAccountByOwnerId(ctx, field)
 				return res
 			}
 

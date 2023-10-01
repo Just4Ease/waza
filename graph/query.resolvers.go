@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"waza/utils"
 )
 
@@ -58,27 +57,31 @@ func (r *queryResolver) GetAccountByID(ctx context.Context, id string) (*Account
 	return &account, nil
 }
 
-// GetAccountByOwnerIDID is the resolver for the getAccountByOwnerIdId field.
-func (r *queryResolver) GetAccountByOwnerIDID(ctx context.Context, ownerID string) (*Account, error) {
-	panic(fmt.Errorf("not implemented: GetAccountByOwnerIDID - getAccountByOwnerIdId"))
+// GetAccountByOwnerID is the resolver for the getAccountByOwnerId field.
+func (r *queryResolver) GetAccountByOwnerID(ctx context.Context, ownerID string) (*Account, error) {
+	out, err := r.AccountService.GetAccountByOwnerId(ctx, ownerID)
+	if err != nil {
+		return nil, err
+	}
+
+	var account Account
+	_ = utils.UnPack(out, &account)
+	return &account, nil
 }
 
 // GetTransactionHistory is the resolver for the getTransactionHistory field.
 func (r *queryResolver) GetTransactionHistory(ctx context.Context, accountID string) ([]*Transaction, error) {
-	panic(fmt.Errorf("not implemented: GetTransactionHistory - getTransactionHistory"))
+	out, err := r.TransactionService.ListTransactionHistory(ctx, accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	var transactions []*Transaction
+	_ = utils.UnPack(out, &transactions)
+	return transactions, nil
 }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *queryResolver) ListAccounts(ctx context.Context) ([]*Account, error) {
-	panic(fmt.Errorf("not implemented: ListAccounts - listAccounts"))
-}

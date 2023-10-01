@@ -47,11 +47,11 @@ func (a AccountService) CreateAccount(ctx context.Context, user models.User) (*m
 
 		// We will dash this new user's account NGN10,000 as bonus for joining Waza.
 		// ( Trust Nigerians, they like free money. )
-		Balance:             0,
-		BalanceBeforeCredit: 0, // To be polled from transactions endpoint.
-		BalanceBeforeDebit:  0, // To be polled from transactions endpoint.
-		BalanceAfterDebit:   0, // To be polled from transactions endpoint.
-		BalanceAfterCredit:  0, // To be polled from transactions endpoint.
+		Balance:             10000, // Hard code this for now. ( note, I'm not doing kobo related stuff for this test )
+		BalanceBeforeCredit: 0,     // To be used internally for transaction
+		BalanceAfterCredit:  0,     // To be used internally for transaction
+		BalanceBeforeDebit:  0,     // To be used internally for transaction
+		BalanceAfterDebit:   0,     // To be used internally for transaction
 	}
 
 	createdAccount, err := a.accountRepository.CreateAccount(ctx, &account)

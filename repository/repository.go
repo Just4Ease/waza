@@ -26,6 +26,6 @@ type AccountRepository interface {
 type TransactionRepository interface {
 	CreateTransaction(ctx context.Context, payload *models.Transaction) (*models.Transaction, error)
 	GetTransactionById(ctx context.Context, id string) (*models.Transaction, error)
-	UpdateTransaction(ctx context.Context, payload *models.Transaction) (*models.Transaction, error)
+	UpdateTransaction(ctx context.Context, transactionId string, status models.TransactionStatus) (*models.Transaction, error)
 	ListTransactionHistoryByAccountId(ctx context.Context, accountId string) ([]*models.Transaction, error)
 }

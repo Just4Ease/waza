@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"math"
 	"time"
@@ -44,8 +45,8 @@ func (a accountsRepo) CreateAccount(ctx context.Context, payload *models.Account
 
 	_txt := `
 INSERT INTO 
-    accounts (id, accountName, accountOwnerId, currency, iso2, balance, timeCreated, timeUpdated)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    accounts (id, accountName, accountOwnerId, currency, iso2, balance, balanceBeforeCredit, balanceAfterCredit, balanceBeforeDebit, balanceAfterDebit,  timeCreated, timeUpdated)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 	statement, err := a.dataStore.PrepareContext(ctx, _txt)
@@ -57,8 +58,8 @@ INSERT INTO
 		payload.Id,
 		payload.AccountName,
 		payload.AccountOwnerId,
-		payload.AccountOwnerId,
 		payload.Currency,
+		payload.Iso2,
 		payload.Balance,
 		payload.TimeCreated,
 		payload.TimeUpdated,
@@ -76,6 +77,7 @@ func (a accountsRepo) GetAccountById(ctx context.Context, id string) (*models.Ac
 }
 
 func (a accountsRepo) GetAccountByOwnerId(ctx context.Context, ownerId string) (*models.Account, error) {
+	fmt.Print(ownerId)
 	row := a.dataStore.QueryRowContext(ctx, "SELECT * from accounts WHERE accountOwnerId = ?", ownerId)
 	return scanner(row)
 }
@@ -199,6 +201,10 @@ func scanner(row *sql.Row) (*models.Account, error) {
 		&account.Currency,
 		&account.Iso2,
 		&account.Balance,
+		&account.BalanceBeforeCredit,
+		&account.BalanceAfterCredit,
+		&account.BalanceBeforeDebit,
+		&account.BalanceAfterDebit,
 		&account.TimeCreated,
 		&account.TimeUpdated,
 	); err != nil {
