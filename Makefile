@@ -15,3 +15,6 @@ build:
 	docker build -t waza-justice-test .
 docker: build
 	docker run -e ENVIRONMENT=staging -e PORT=4000 waza-justice-test
+
+run_binary:
+	./waza_app

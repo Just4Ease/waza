@@ -34,6 +34,8 @@ $ make schema
 # To start it in docker
 
 $ make docker ( this fails because of sqlite. but a binary has been built )
+`waza_app` is the binary.
+
 ```
 
 ```shell script
@@ -52,6 +54,12 @@ $ make local
 # to format code
 
 $ make fmt 
+```
+
+```shell script
+# To run existing binary
+
+$ ENVIRONMENT=local PORT=4000 make run_binary 
 ```
 
 ### Simple Documentation
