@@ -1,0 +1,11 @@
+type Query {
+    getUserById(id: String!): User
+    getUserByEmail(email: String!): User
+    getUserByPhone(phone: String!): User
+
+
+    getAccountById(id: String!): Account
+    getAccountByOwnerId(ownerId: String!): Account
+
+    getTransactionHistory(accountId: String!): [Transaction!]!
+}
